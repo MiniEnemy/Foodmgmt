@@ -305,13 +305,6 @@ This project demonstrates proficiency in:
 
 ---
 
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
-
----
-
-
 This project is developed as part of training at **Amnil Pvt. Ltd.**
 
 ---
