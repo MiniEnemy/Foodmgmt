@@ -1,0 +1,80 @@
+﻿@model IEnumerable<FoodMgmt.Models.Order>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h2>Active Orders</h2>
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-primary">Create New Order</a>
+    <a asp-action="Completed" class="btn btn-success">View Completed Orders</a>
+</div>
+
+@{
+    var searchValue = ViewContext.HttpContext.Request.Query["search"];
+}
+<form method="get" class="mb-3">
+    <input type="text" name="search" value="@searchValue" placeholder="Search by Customer or ID" class="form-control" />
+</form>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (!Model.Any())
+    {
+        <tr><td colspan="6" class="text-center text-muted">No active orders found.</td></tr>
+    }
+    else
+    {
+        foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.Customer.FullName</td>
+                <td>@order.OrderDate.ToLocalTime().ToString("g")</td>
+                <td>@order.GrandTotal.ToString("C")</td>
+                <td>
+                    @if (order.IsCompleted)
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@order.Id" class="btn btn-sm btn-secondary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-sm btn-danger">Delete</a>
+
+                    @if (!order.IsCompleted)
+                    {
+                        <form asp-action="Complete" asp-route-id="@order.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success"
+                                    onclick="return confirm('Mark this order as completed?');">
+                                Complete
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

@@ -1,0 +1,81 @@
+﻿@model FoodMgmt.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2>Dashboard</h2>
+
+<div class="mb-3">
+    <a href="@Url.Action("ExportFoodItems", "Dashboard")" class="btn btn-success">Export Food Items to Excel</a>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Customers</h5>
+                <p class="card-text">@Model.TotalCustomers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Suppliers</h5>
+                <p class="card-text">@Model.TotalSuppliers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Food Items</h5>
+                <p class="card-text">@Model.TotalFoodItems</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Orders</h5>
+                <p class="card-text">@Model.TotalOrders</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Orders Status</h5>
+                <p>Completed: @Model.CompletedOrders</p>
+                <p>Pending: @Model.PendingOrders</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Low Stock Items</h5>
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.LowStockItems)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Stock</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+﻿@model IEnumerable<FoodMgmt.Models.Order>
+
+<h2>Completed Orders</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model)
+        {
+            <tr>
+                <td>@o.Id</td>
+                <td>@o.Customer.FullName</td>
+                <td>@o.OrderDate.ToLocalTime()</td>
+                <td>@o.GrandTotal</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Active Orders</a>

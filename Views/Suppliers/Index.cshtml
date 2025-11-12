@@ -1,0 +1,50 @@
+﻿@model IEnumerable<FoodMgmt.Models.Supplier>
+@{
+    ViewData["Title"] = "Suppliers";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Suppliers</h2>
+
+    <div class="d-flex justify-content-between mb-3">
+        <form method="get" asp-action="Index" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search suppliers..." value="@Context.Request.Query["search"]" />
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+        <a asp-action="Create" class="btn btn-success">+ Add Supplier</a>
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th class="text-center" style="width: 180px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No suppliers found.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.Name</td>
+                        <td>@s.Phone</td>
+                        <td>@s.Email</td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-warning me-1">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@s.Id" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

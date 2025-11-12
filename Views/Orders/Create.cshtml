@@ -1,0 +1,137 @@
+﻿@model FoodMgmt.Models.ViewModels.OrderCreateVm
+@{
+    ViewData["Title"] = "Create Order";
+}
+<h2>Create Order</h2>
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="CustomerId" class="form-label">Customer</label>
+        <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.Customers"></select>
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+
+    <h5>Items</h5>
+    <table class="table" id="orderTable">
+        <thead>
+            <tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Total</th><th></th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <select name="Items[0].FoodItemId" class="form-select food-select">
+                        <option value="">--Select--</option>
+                        @foreach (var fi in (SelectList)ViewBag.FoodItems)
+                        {
+                            var parts = fi.Text.Split('|');
+                            var name = parts[0];
+                            var price = parts.Length > 1 ? parts[1] : "0"; // default 0 if no price
+
+                            <option value="@fi.Value" data-price="@price">@name</option>
+                        }
+
+</select>
+                                  </td>
+                <td><input name="Items[0].Quantity" type="number" min="1" value="1" class="form-control qty-input" /></td>
+                <td class="unit-price">0.00</td>
+                <td class="line-total">0.00</td>
+                <td><button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-sm btn-secondary" id="addRow">Add item</button>
+
+    <div class="mt-3">
+        <strong>Grand Total: </strong> <span id="grandTotal">0.00</span>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Save Order</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+/* Prepare arrays from ViewBag.FoodItems for price lookups.
+   For simplicity we will fetch prices via AJAX when item selected.
+   Implement endpoint in controller if needed. For now we embed food list via data attribute. */
+const foodItems = [];
+@{
+    // Prepare JS array: id => {name, price}
+    var items = (SelectList)ViewBag.FoodItems;
+    foreach (var i in items)
+    {
+        // Can't access price in SelectList text. Better: create API endpoint. For demo, we'll fetch price by AJAX call.
+    }
+}
+document.getElementById('addRow').addEventListener('click', function() {
+    const tbody = document.querySelector('#orderTable tbody');
+    const index = tbody.querySelectorAll('tr').length;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>
+            <select name="Items[${index}].FoodItemId" class="form-select food-select">
+                <option value="">--Select--</option>
+                @foreach (var fi in (SelectList)ViewBag.FoodItems)
+                {
+                    <text><option value="@fi.Value">@fi.Text</option></text>
+                }
+            </select>
+        </td>
+        <td><input name="Items[${index}].Quantity" type="number" min="1" value="1" class="form-control qty-input" /></td>
+        <td class="unit-price">0.00</td>
+        <td class="line-total">0.00</td>
+        <td><button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td>`;
+    tbody.appendChild(tr);
+});
+
+document.body.addEventListener('change', async function(e) {
+    if (e.target.classList.contains('food-select')) {
+        const tr = e.target.closest('tr');
+        const id = e.target.value;
+        if (!id) { setLinePrice(tr, 0); return; }
+        // retrieve price via endpoint
+        const res = await fetch(`/api/fooditems/price/${id}`);
+        if (res.ok) {
+            const data = await res.json();
+            setLinePrice(tr, parseFloat(data.price));
+        } else {
+            setLinePrice(tr, 0);
+        }
+        recalcTotal();
+    }
+});
+
+document.body.addEventListener('input', function(e) {
+    if (e.target.classList.contains('qty-input')) {
+        const tr = e.target.closest('tr');
+        const qty = parseInt(e.target.value) || 0;
+        const unit = parseFloat(tr.querySelector('.unit-price').textContent) || 0;
+        tr.querySelector('.line-total').textContent = (qty * unit).toFixed(2);
+        recalcTotal();
+    }
+});
+
+document.body.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-row')) {
+        e.target.closest('tr').remove();
+        recalcTotal();
+    }
+});
+
+function setLinePrice(tr, price) {
+    tr.querySelector('.unit-price').textContent = price.toFixed(2);
+    const qty = parseInt(tr.querySelector('.qty-input').value) || 0;
+    tr.querySelector('.line-total').textContent = (qty * price).toFixed(2);
+}
+
+function recalcTotal() {
+    let sum = 0;
+    document.querySelectorAll('.line-total').forEach(td => sum += parseFloat(td.textContent) || 0);
+    document.getElementById('grandTotal').textContent = sum.toFixed(2);
+}
+</script>
+}

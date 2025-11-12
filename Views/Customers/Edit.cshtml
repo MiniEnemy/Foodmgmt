@@ -1,0 +1,42 @@
+﻿@model FoodMgmt.Models.Customer
+
+@{
+    ViewData["Title"] = "Edit Customer";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-3">Edit Customer</h2>
+
+    <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" placeholder="Enter full name" required />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" type="email" placeholder="example@email.com" required />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Phone" class="form-label"></label>
+            <input asp-for="Phone" class="form-control" type="tel" placeholder="+977-98XXXXXXXX" required />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary px-4">Update</button>
+            <a asp-action="Index" class="btn btn-secondary px-4">Back</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+}

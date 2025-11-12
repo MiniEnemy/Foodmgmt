@@ -1,0 +1,89 @@
+﻿@model FoodMgmt.Models.ViewModels.OrderCreateVm
+@{
+    ViewData["Title"] = "Edit Order";
+}
+
+<h2 class="mb-4">Edit Order</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="id" value="@ViewBag.OrderId" />
+
+    <div class="mb-3">
+        <label asp-for="CustomerId" class="form-label">Customer</label>
+        <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.Customers">
+            <option value="">-- Select Customer --</option>
+        </select>
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+
+    <h5 class="mt-4 mb-3">Order Items</h5>
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th style="width:45%">Food Item</th>
+                <th style="width:25%">Quantity</th>
+                <th style="width:10%">Action</th>
+            </tr>
+        </thead>
+        <tbody id="itemRows">
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <select name="Items[@i].FoodItemId" class="form-select" asp-items="ViewBag.FoodItems">
+                            <option value="">-- Select Food --</option>
+                        </select>
+                        <script>
+                            document.currentScript.previousElementSibling.value = "@Model.Items[i].FoodItemId";
+                        </script>
+                    </td>
+                    <td>
+                        <input name="Items[@i].Quantity" value="@Model.Items[i].Quantity" type="number" min="1" class="form-control" />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-outline-primary" onclick="addRow()">Add Item</button>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function addRow() {
+            var index = document.querySelectorAll("#itemRows tr").length;
+            var newRow = `
+                <tr>
+                    <td>
+                        <select name="Items[${index}].FoodItemId" class="form-select">
+                            <option value="">-- Select Food --</option>
+                            @foreach (var f in (IEnumerable<SelectListItem>)ViewBag.FoodItems)
+                            {
+                                    <text><option value="@f.Value">@f.Text</option></text>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input name="Items[${index}].Quantity" type="number" min="1" class="form-control" />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                    </td>
+                </tr>`;
+            document.querySelector("#itemRows").insertAdjacentHTML("beforeend", newRow);
+        }
+
+        function removeRow(btn) {
+            btn.closest("tr").remove();
+        }
+    </script>
+}
